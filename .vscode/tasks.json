@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-compiler",
+            "type": "shell",
+            "command": "g++",
+            "args": ["-std=c++17", "Compiler.cpp", "-o", "compiler"],
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Builds the notal compiler"
+        }
+    ]
+}

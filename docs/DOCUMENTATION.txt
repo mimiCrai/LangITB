@@ -1,0 +1,60 @@
+DOCUMENTATION
+This language is written just to make you and me suffer. Use this at your own risk
+Codes are written in-between two (```).
+
+
+
+1. Variables
+-must be declared at the start of the code. Use this(between two ```) as template:
+```
+	KAMUS
+	Var1 : dataType1
+	Var2 : dataType2
+	.
+	.
+	.
+
+	ALGORITMA
+```
+-make sure to NOT USE the variables, outside of what has been declared. 
+
+
+2. INPUT/OUTPUT:
+-INPUT:
+```
+	-> Var
+```
+-OUTPUT:
+```
+	<- Var
+```
+
+
+3. Assignment
+```
+	targetVar <- Var1
+```
+-This will copy the value of var1 into targetVar. You can also add operators like shown in the code below: 
+```
+	targetVar <- Var1 + Var2 - Var3
+```
+
+
+4. Conditional 
+```
+	if (cond.) then
+		//trueCode
+	else
+		//falseCode
+```
+-cond. is condition, must results in Boolean
+-trueCode and falseCode is lines of codes. Don't forget the indentation
+
+
+5. Looping
+```
+	i traversal [Start..End]:
+```
+-Start and End is integer, looping from Start to End, both inclusive.
+
+

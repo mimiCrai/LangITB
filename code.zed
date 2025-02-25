@@ -1,6 +1,0 @@
-i traversal [1..3]:
-    j traversal [1..2]:
-        -> i
-    j traversal [1..3]:
-        <- j
-<- 0
