@@ -6,7 +6,8 @@
 # Declared var5 as float
 # Declared var6 as integer
 
-var1 = input()
+#input(var1)
+var1 = 2
 for i in range(int(var1), int(3) + 1):
     for j in range(int(1), int(2) + 1):
         print(i)
@@ -21,7 +22,10 @@ for i in range(int(var1), int(3) + 1):
             print(k)
         else:
             if i > k:
-                print(k)
+                if 2 < 3:
+                    print(2)
+                else:
+                    print(3)
             else:
                 #false2
                 print(1)
@@ -30,7 +34,7 @@ print(0)
 #lol
 if 1 == 1:
     #(...)
-    print(0)
+    print(1)
 else:
     #(...)
     print(0)
@@ -40,3 +44,39 @@ print(var)
 
 def testReturn():
     return 0
+
+while 2 > 3:
+    print(0)
+
+#2
+while True:
+    print(2)
+    if not (2 > 3):
+        break
+
+#3
+while True:
+    while 2 > 3:
+        print(2)
+    if not (2 > 3):
+        break
+
+#4
+while True:
+    while True:
+        print(5)
+        if (2 < 3):
+            break
+
+    print(4)
+    if (2 < 3):
+        break
+
+
+print(0)# {tnihs is just a comment}
+
+# {thi
+# s is also 
+# j   sut ano
+# ther commen
+    # t}

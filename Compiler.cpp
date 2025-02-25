@@ -35,14 +35,41 @@ vector<CodeBlock> readIndentedCode(ifstream &file) {
 }
 
 void compileToPy(const vector<CodeBlock>& indentedCode) {
-    regex traversalRegex(R"((\w+)\s+traversal\s+\[(\w+)\.\.(\w+)\]:)");
-    regex returnRegex(R"(->\s+(\w+))");
+    
+    //Comment
+    regex commentRegex(R"(#.*)");
+    regex openCommentRegex(R"(\{.*)");
+    regex closeCommentRegex(R"(.*\})");
+    //Variable
+    regex variableDeclarationRegex(R"((\w+)\s*:\s*(integer|string|char|bool|float))");
+    regex assignRegex(R"((\w+)\s+<-\s+(.+))");
+    
+    //IO
     regex outputRegex(R"(output\((.+)\))");
     regex inputRegex(R"(input\((.+)\))");
-    regex assignRegex(R"((\w+)\s+<-\s+(.+))");
+    
+    //Conditional
     regex ifThenRegex(R"(if\s*\((.+)\)\s*then)");
     regex elseRegex(R"(^\s*else)");
-    regex variableDeclarationRegex(R"((\w+)\s*:\s*(integer|string|char|bool|float))");
+    
+    //looping
+    regex traversalRegex(R"((\w+)\s+traversal\s+\[(\w+)\.\.(\w+)\]:)");
+    regex whileDoRegex(R"(while\s*\((.+)\)\s*do:)");
+        //do-while
+    regex doRegex(R"(do:)");
+    regex whileRegex(R"(while\s*\((.+)\))");
+        //repeat-until
+    regex repeatRegex(R"(repeat:)");
+    regex untilRegex(R"(until\s*\((.+)\))");
+
+    //function
+    regex returnRegex(R"(->\s+(\w+))");
+    
+
+
+    
+    
+
 
     ofstream outFile("output.py");
     outFile << "# Generated Python code\n";
@@ -50,7 +77,12 @@ void compileToPy(const vector<CodeBlock>& indentedCode) {
     unordered_map<string, string> variables;
     bool inAlgorithm = false;
     stack<int> indentStack;
-    bool waitingForElse = false;
+
+    //waiting convention
+    int waitingCloseComment = 0;
+    int waitingForElse = 0;
+    int waitingDoWhile = 0;
+    int waitingRepeatUntil = 0;
 
     for (const auto& block : indentedCode) {
         if (block.code == "KAMUS") {
@@ -74,28 +106,92 @@ void compileToPy(const vector<CodeBlock>& indentedCode) {
         }
 
         smatch match;
-        if (regex_search(block.code, match, traversalRegex)) {
-            outFile << string(block.indentLevel, ' ') << "for " << match[1] << " in range(int(" << match[2] << "), int(" << match[3] << ") + 1):\n";
+        
+        if (regex_search(block.code, match, commentRegex)) {
+            outFile << string(block.indentLevel, ' ') << block.code;
+
+        //  Looping
+            
+            //traversal
+        } else if (regex_search(block.code, match, traversalRegex)) {
+            outFile << string(block.indentLevel, ' ') << "for " << match[1] << " in range(int(" << match[2] << "), int(" << match[3] << ") + 1):";
             indentStack.push(block.indentLevel);
-        } else if (regex_search(block.code, match, assignRegex)) {
-            outFile << string(block.indentLevel, ' ') << match[1] << " = " << match[2] << "\n";
-        } else if (regex_search(block.code, match, inputRegex) && block.code.find("<-") == string::npos) {
-            outFile << string(block.indentLevel, ' ') << match[1] << " = input()\n";
+            //while-do
+        } else if (regex_search(block.code, match, whileDoRegex)) {
+            outFile << string(block.indentLevel, ' ') << "while " << match[1] << ":";
+            indentStack.push(block.indentLevel);
+            //do-while
+        } else if (regex_search(block.code, match, doRegex)) {
+            outFile << string(block.indentLevel, ' ') << "while True:";
+            indentStack.push(block.indentLevel);
+            waitingDoWhile++;
+        } else if (waitingDoWhile > 0 && regex_search(block.code, match, whileRegex)) {
+            outFile << "    " << string(block.indentLevel, ' ') << "if not (" << match[1] << "):\n";
+            outFile << "    " << string(block.indentLevel, ' ') << "    break\n";
+            waitingDoWhile--;
+            //repeat-until
+        } else if (regex_search(block.code, match, repeatRegex)) {
+            outFile << string(block.indentLevel, ' ') << "while True:";
+            indentStack.push(block.indentLevel);
+            waitingRepeatUntil++;
+        } else if (waitingRepeatUntil > 0 && regex_search(block.code, match, untilRegex)) {
+            outFile << "    " << string(block.indentLevel, ' ') << "if (" << match[1] << "):\n";
+            outFile << "    " << string(block.indentLevel, ' ') << "    break\n";
+            waitingRepeatUntil--;
+
+
+        //  Input/output
+        } else if (regex_search(block.code, match, inputRegex)) {
+            outFile << string(block.indentLevel, ' ') << match[1] << " = input()";
         } else if (regex_search(block.code, match, outputRegex)) {
-            outFile << string(block.indentLevel, ' ') << "print(" << match[1] << ")\n";
+            outFile << string(block.indentLevel, ' ') << "print(" << match[1] << ")";
+        
+
+        //  Var
+        } else if (regex_search(block.code, match, assignRegex)) {
+            outFile << string(block.indentLevel, ' ') << match[1] << " = " << match[2] << "";
         } else if (regex_search(block.code, match, returnRegex)) {
-            outFile << string(block.indentLevel, ' ') << "return " << match[1] << "\n";
+            outFile << string(block.indentLevel, ' ') << "return " << match[1] << "";
+        
+
+        //  Conditional
         } else if (regex_search(block.code, match, ifThenRegex)) {
-            outFile << string(block.indentLevel, ' ') << "if " << match[1] << ":\n";
+            outFile << string(block.indentLevel, ' ') << "if " << match[1] << ":";
             indentStack.push(block.indentLevel);
-            waitingForElse = true;
-        } else if (waitingForElse && regex_search(block.code, match, elseRegex)) {
-            outFile << string(block.indentLevel, ' ') << "else:\n";
+            waitingForElse++;
+        } else if ((waitingForElse > 0) && regex_search(block.code, match, elseRegex)) {
+            outFile << string(block.indentLevel, ' ') << "else:";
             indentStack.push(block.indentLevel);
-            waitingForElse = false;
-        }else {
-            outFile << string(block.indentLevel, ' ') << block.code << "\n";
+            waitingForElse--;
+        
+
+        //  Misc
+        } else {
+            if (block.code.find('{') == string::npos && waitingCloseComment == 0) {
+                outFile << string(block.indentLevel, ' ') << block.code << "";
+            }
+            // outFile << string(block.indentLevel, ' ') << block.code << "\n";
         }
+
+        //comment
+        if (regex_search(block.code, match, openCommentRegex)) {
+            size_t pos = block.code.find('{');
+            if (pos != string::npos) {
+                outFile << "# " << block.code.substr(pos);
+            } else {
+                outFile << string(block.indentLevel, ' ') << "# " << block.code;
+            }
+            if(!regex_search(block.code, match, closeCommentRegex)){
+                waitingCloseComment++;
+            }
+            
+        } else if (waitingCloseComment > 0) {
+            if(regex_search(block.code, match, closeCommentRegex)){
+                waitingCloseComment--;
+            }
+            outFile << string(block.indentLevel, ' ') << "# " << block.code;
+        }
+        outFile << "\n";
     }
 
     outFile.close();

@@ -52,9 +52,29 @@ Codes are written in-between two (```).
 
 
 5. Looping
+-for loop
 ```
 	i traversal [Start..End]:
+		//code
 ```
 -Start and End is integer, looping from Start to End, both inclusive.
 
+-whileDo
+```
+	while (cond.) do:
+		//code
+```
 
+-doWhile
+```
+	do:
+		//code
+	while (cond.)
+```
+
+-repeatUntil
+```
+	repeat:
+		//code
+	until (cond.)
+```

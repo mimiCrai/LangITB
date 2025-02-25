@@ -8,7 +8,8 @@ var6 : integer
 
 ALGORITMA
 
-input(var1)
+#input(var1)
+var1 <- 2
 i traversal [var1..3]:
     j traversal [1..2]:
         output(i)
@@ -23,7 +24,10 @@ i traversal [var1..3]:
             output(k)
         else
             if (i > k) then
-                output(k)
+                if (2 < 3) then
+                    output(2)
+                else
+                    output(3)
             else
                 #false2
                 output(1)
@@ -32,7 +36,7 @@ output(0)
 #lol
 if (1 == 1) then
     #(...)
-    output(0)
+    output(1)
 else
     #(...)
     output(0)
@@ -42,3 +46,31 @@ output(var)
 
 def testReturn():
     -> 0
+
+while (2 > 3) do:
+    output(0)
+
+#2
+do:
+    output(2)
+while (2 > 3)
+#3
+do:
+    while (2 > 3) do:
+        output(2)
+while (2 > 3)
+#4
+repeat:
+    repeat:
+        output(5)
+    until (2 < 3)
+    output(4)
+until (2 < 3)
+
+output(0) {tnihs is just a comment}
+
+{thi
+s is also 
+j   sut ano
+ther commen
+    t}
